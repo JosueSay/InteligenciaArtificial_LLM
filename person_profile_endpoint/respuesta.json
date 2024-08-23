@@ -1,0 +1,116 @@
+{
+    "information": {
+        "public_identifier": "josuesay",
+        "profile_pic_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/person/josuesay/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f4e1e3258532fa633237750ff457e7fa606895e7be0bc737460d4f11d1be82c5",
+        "background_cover_image_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/person/josuesay/cover?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f2e9fa786b93f030b0c3af62bd32932c8045d2e6daf5c1cc13af99676f4b596a",
+        "first_name": "Josu\u00e9",
+        "last_name": "Say",
+        "full_name": "Josu\u00e9 Say",
+        "follower_count": 6,
+        "occupation": "\ud83d\udfe2 Estudiante en Universidad del Valle de Guatemala \ud83d\udfe2",
+        "headline": "\ud83d\udfe2 Estudiante en Universidad del Valle de Guatemala \ud83d\udfe2",
+        "summary": "Soy estudiante de tercer a\u00f1o de Ingenier\u00eda en Ciencias de la Computaci\u00f3n y Tecnolog\u00edas de la Informaci\u00f3n, con experiencia en programaci\u00f3n orientada a objetos y un fuerte inter\u00e9s en la seguridad inform\u00e1tica. Actualmente, estoy buscando aumentar mis conocimientos en bases de datos y aplicarlos en inteligencia artificial. Mi objetivo a largo plazo es seguir una maestr\u00eda en seguridad inform\u00e1tica. Mis habilidades incluyen programaci\u00f3n en Java, Kotlin y Python, as\u00ed como experiencia en el dise\u00f1o de aplicaciones utilizando Figma. Adem\u00e1s, tengo experiencia en el manejo de bases de datos PostgreSQL y en el uso de herramientas como PgAdmin. Estoy comprometido a seguir aprendiendo y desarroll\u00e1ndome profesionalmente en el campo de la inform\u00e1tica.",
+        "country": "GT",
+        "country_full_name": "Guatemala",
+        "city": "Guatemala City",
+        "state": "Guatemala",
+        "experiences": [
+            {
+                "starts_at": {
+                    "day": 1,
+                    "month": 2,
+                    "year": 2024
+                },
+                "ends_at": null,
+                "company": "Universidad del Valle de Guatemala",
+                "company_linkedin_profile_url": "https://www.linkedin.com/company/universidad-del-valle-de-guatemala",
+                "company_facebook_profile_url": null,
+                "title": "Auxiliar en el curso de Introducci\u00f3n a la Ingenier\u00eda en Ciencias de la Computaci\u00f3n",
+                "description": "RESPONSABILIDADES:\nColaborar con el catedr\u00e1tico y otros auxiliares en la calificaci\u00f3n de tareas asignadas, asegurando la consistencia y la equidad en la evaluaci\u00f3n de los estudiantes.\n\nTrabajar en equipo con el catedr\u00e1tico y otros auxiliares para proporcionar retroalimentaci\u00f3n constructiva a los estudiantes y ayudar en su desarrollo acad\u00e9mico.\n\nPresentar sobre diversas tecnolog\u00edas, como GitHub y el uso de cascos Emotiv para el an\u00e1lisis de actividad el\u00e9ctrica del cerebro, proporcionando a los estudiantes informaci\u00f3n adicional y pr\u00e1ctica sobre temas relevantes en la ingenier\u00eda en ciencias de la computaci\u00f3n.",
+                "location": "Guatemala",
+                "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/universidad-del-valle-de-guatemala/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=4761bd388a7b7d6f79e3dc4f02175922ecd70b9ba9ac6585e9d4ae6392830dcb"
+            },
+            {
+                "starts_at": {
+                    "day": 1,
+                    "month": 2,
+                    "year": 2024
+                },
+                "ends_at": null,
+                "company": "Universidad del Valle de Guatemala",
+                "company_linkedin_profile_url": "https://www.linkedin.com/company/universidad-del-valle-de-guatemala",
+                "company_facebook_profile_url": null,
+                "title": "Auxiliar en el curso de  Algoritmos y Programaci\u00f3n B\u00e1sica",
+                "description": "RESPONSABILIDADES:\nColaborar con el catedr\u00e1tico y otros auxiliares en la calificaci\u00f3n de tareas asignadas, asegurando la consistencia y la equidad en la evaluaci\u00f3n de los estudiantes.\n\nTrabajar en equipo con el catedr\u00e1tico y otros auxiliares para proporcionar retroalimentaci\u00f3n constructiva a los estudiantes y ayudar en su desarrollo acad\u00e9mico.",
+                "location": "Guatemala",
+                "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/universidad-del-valle-de-guatemala/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=4761bd388a7b7d6f79e3dc4f02175922ecd70b9ba9ac6585e9d4ae6392830dcb"
+            },
+            {
+                "starts_at": {
+                    "day": 1,
+                    "month": 6,
+                    "year": 2023
+                },
+                "ends_at": {
+                    "day": 30,
+                    "month": 11,
+                    "year": 2023
+                },
+                "company": "Universidad del Valle de Guatemala",
+                "company_linkedin_profile_url": "https://www.linkedin.com/company/universidad-del-valle-de-guatemala",
+                "company_facebook_profile_url": null,
+                "title": "Auxiliar en el departamento de D-HIVE (Maker Assistant)",
+                "description": "RESPONSABILIDADES:\nCapacitaci\u00f3n en el manejo y mantenimiento de cortadoras l\u00e1ser, incluyendo la ense\u00f1anza de t\u00e9cnicas de seguridad y procedimientos operativos.\n\nResoluci\u00f3n de dudas sobre el manejo de impresoras 3D y orientaci\u00f3n en el uso de software como Inkscape y CURA para proyectos de dise\u00f1o.\n\nParticipaci\u00f3n en la realizaci\u00f3n de proyectos, como la creaci\u00f3n de un dirigible utilizando una cortadora l\u00e1ser.\n\nSupervisi\u00f3n del cumplimiento de las normas de seguridad por parte de los estudiantes en el \u00e1rea de trabajo, garantizando un entorno seguro y productivo para la realizaci\u00f3n de proyectos.",
+                "location": "Guatemala",
+                "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/universidad-del-valle-de-guatemala/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=4761bd388a7b7d6f79e3dc4f02175922ecd70b9ba9ac6585e9d4ae6392830dcb"
+            }
+        ],
+        "education": [
+            {
+                "starts_at": {
+                    "day": 1,
+                    "month": 1,
+                    "year": 2022
+                },
+                "ends_at": {
+                    "day": 30,
+                    "month": 11,
+                    "year": 2027
+                },
+                "field_of_study": "Tecnolog\u00eda de la informaci\u00f3n",
+                "degree_name": "Licenciatura en Ingenier\u00eda en Ciencia de la Computaci\u00f3n y Tecnolog\u00edas de la Informaci\u00f3n",
+                "school": "Universidad del Valle de Guatemala",
+                "school_linkedin_profile_url": "https://www.linkedin.com/company/universidad-del-valle-de-guatemala",
+                "school_facebook_profile_url": null,
+                "description": "Skills: Programaci\u00f3n orientada a objetos (POO) \u00b7 GitHub \u00b7 PostgreSQL \u00b7 Bases de datos \u00b7 Trabajo en equipo",
+                "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/universidad-del-valle-de-guatemala/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240809%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240809T184637Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=4761bd388a7b7d6f79e3dc4f02175922ecd70b9ba9ac6585e9d4ae6392830dcb",
+                "grade": "Estudiante Distinguido en la Universidad del Valle de Guatemala (2023-2024)",
+                "activities_and_societies": null
+            }
+        ],
+        "accomplishment_courses": [
+            {
+                "name": "Algoritmos y Estructuras de Datos",
+                "number": "CC2016"
+            },
+            {
+                "name": "Organizaci\u00f3n de Computadoras y Assembler",
+                "number": "CC3054"
+            },
+            {
+                "name": "Programaci\u00f3n Orientada a Objetos",
+                "number": "CC2008"
+            },
+            {
+                "name": "Programaci\u00f3n de microprocesadores",
+                "number": "CC3086"
+            },
+            {
+                "name": "Programaci\u00f3n de plataformas m\u00f3viles",
+                "number": "CC3087"
+            }
+        ],
+        "connections": 6
+    },
+    "text": "1. Josu\u00e9 Say is a third-year student studying Computer Science and Information Technology at Universidad del Valle de Guatemala. He is passionate about object-oriented programming and cybersecurity, with a goal of pursuing a master's degree in cybersecurity in the future.\n\n2. Two interesting facts about Josu\u00e9 Say:\n   - He has experience in programming languages such as Java, Kotlin, and Python, as well as designing applications using Figma.\n   - Josu\u00e9 has worked as an assistant in various courses at his university, providing feedback to students and assisting in their academic development."
+}

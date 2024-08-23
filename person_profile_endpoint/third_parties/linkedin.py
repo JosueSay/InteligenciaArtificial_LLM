@@ -10,7 +10,7 @@ def scrape_linkedin_profile(linkedin_profile_url: str, mock: bool = True):
     Manually scrape the information from the LinkedIn profile
     """
     if mock:
-        linkedin_profile_url = "https://gist.githubusercontent.com/rogerdiaz/2d10d662484e892c83106b749b6b8d27/raw/316ff86d46bf2da7b0fa00b8ac149ebe38d894b3/roger-diaz.json"
+        linkedin_profile_url = "https://gist.githubusercontent.com/JosueSay/729b1f154bab56c63e3b6ec67996e541/raw/7ce14c81379cbeb0c97c97ac01d46ba2567d9c05/gistfile_linkedin_scrape.json"
         response = requests.get(linkedin_profile_url,
                                 timeout=10,)
 
@@ -19,7 +19,7 @@ def scrape_linkedin_profile(linkedin_profile_url: str, mock: bool = True):
         headers = {'Authorization': 'Bearer ' + api_key}
         api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
         params = {
-            'linkedin_profile_url': 'https://www.linkedin.com/in/roger-d%C3%ADaz-0946758b/'
+            'linkedin_profile_url': 'https://www.linkedin.com/in/josuesay/'
         }
         response = requests.get(api_endpoint,
                                 params=params,
@@ -40,4 +40,4 @@ def scrape_linkedin_profile(linkedin_profile_url: str, mock: bool = True):
     return data
 
 if __name__ == '__main__':
-    print(scrape_linkedin_profile(linkedin_profile_url="https://www.linkedin.com/in/roger-d%C3%ADaz-0946758b/"),)
+    print(scrape_linkedin_profile(linkedin_profile_url="https://www.linkedin.com/in/josuesay/"),)
