@@ -39,6 +39,18 @@ def format_chat_history(chat_history: List[Dict[str, str]]) -> str:
 
 
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
+    # Mostrar la consulta recibida
+    print(f"\n\n=== NUEVA CONSULTA ===")
+    print(f"Consulta recibida: {query}")
+
+    # Mostrar el historial actual antes de procesar la consulta
+    print("\nHistorial actual antes de la consulta:")
+    if chat_history:
+        for i, message in enumerate(chat_history, start=1):
+            print(f"{i}. {message['role']}: {message['content']}")
+    else:
+        print("No hay historial previo.")
+
     # Crear embeddings de OpenAI
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
@@ -53,7 +65,7 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
 
     # Formatear el historial de chat en un texto entendible para el modelo
     formatted_chat_history = format_chat_history(chat_history)
-    print("Historial formateado:", formatted_chat_history)  # Agrega esta línea
+    print("\nHistorial formateado enviado al modelo:\n", formatted_chat_history)
 
     # Crear la cadena de preguntas y respuestas utilizando el método adecuado
     qa_chain = RetrievalQA.from_chain_type(
@@ -65,20 +77,28 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     # Ejecutar la consulta, incluyendo el historial formateado en el contexto
     result = qa_chain.invoke({"query": f"{formatted_chat_history}User: {query}"})
 
-    # Agregar mensajes de depuración para verificar los resultados
-    print("Consulta realizada al modelo:", query)
-    print("Respuesta del modelo:", result["result"])
-    print("Documentos fuente:", result["source_documents"])
+    # Mostrar la respuesta recibida del modelo
+    print("\n=== RESPUESTA DEL MODELO ===")
+    print(f"Respuesta del modelo: {result['result']}")
+    print("\nDocumentos fuente:")
+    for doc in result["source_documents"]:
+        print(f"- {doc.metadata.get('source', 'Fuente no disponible')}")
 
-    # Añadir la interacción al historial como diccionarios
+    # Agregar la interacción al historial como diccionarios
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result['result']})
 
-    # Estructurar los resultados para el frontend
+    # Mostrar el historial actualizado después de agregar la respuesta
+    print("\nHistorial actualizado:")
+    for i, message in enumerate(chat_history, start=1):
+        print(f"{i}. {message['role']}: {message['content']}")
+
+    # Estructurar los resultados para el frontend, incluyendo el historial actualizado
     new_result = {
         "query": query,
         "response": result["result"],
-        "sources": [doc.metadata.get("source", "No source available") for doc in result["source_documents"]]
+        "sources": [doc.metadata.get("source", "No source available") for doc in result["source_documents"]],
+        "chat_history": chat_history  # Devolvemos el historial actualizado
     }
 
     return new_result
@@ -91,6 +111,3 @@ if __name__ == "__main__":
     print(run_llm(query="What are the key components of LangChain?", chat_history=chat_history))
     print(run_llm(query="How does LangChain integrate with LLMs?", chat_history=chat_history))
     print(run_llm(query="Can LangChain handle multiple documents at once?", chat_history=chat_history))
-
-
-
