@@ -1,5 +1,13 @@
 import streamlit as st
-from cores import run_llm  # Importamos la función run_llm desde cores.py
+import sys
+import os
+
+# Añade el directorio raíz del proyecto al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Ahora la importación debería funcionar
+from backend.core_langchain_docs import run_llm
+
 
 # Inicializamos el historial de chat en sesión
 if 'chat_history' not in st.session_state:

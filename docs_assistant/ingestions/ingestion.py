@@ -12,6 +12,7 @@ load_dotenv()
 # Inicializar los embeddings
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
+
 # Función para cargar y extraer texto de archivos HTML desde todas las subcarpetas
 def loadDocumentHTML(directory):
     documents = []
@@ -35,8 +36,14 @@ def loadDocumentHTML(directory):
 
 # Función para dividir los documentos en chunks y enviarlos a Pinecone
 def ingest_docs():
-    # Ruta a la carpeta que contiene las subcarpetas con los archivos HTML
-    directory = r"D:\UVG GitHub Repositorios\Selectivo_IA\docs_assistant\langchain-docs\api.python.langchain.com\en\latest"
+    # Obtener el directorio actual de donde está este archivo ingestion.py
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Subir al nivel del proyecto (docs_assistant) y acceder a la carpeta "data"
+    project_directory = os.path.abspath(os.path.join(current_directory, ".."))
+
+    # Construir la ruta relativa desde la carpeta del proyecto
+    directory = os.path.join(project_directory, "data", "langchain-docs", "api.python.langchain.com", "en", "latest")
 
     raw_documents = loadDocumentHTML(directory)
 
@@ -49,9 +56,17 @@ def ingest_docs():
     print(f"split {len(documents)} documents")
 
     for doc in documents:
-        # Actualizar la metadata para que apunte a la URL correcta
+        # Obtener la ruta del archivo original desde los metadatos
         new_url = doc.metadata["source"]
-        new_url = new_url.replace("D:\\UVG GitHub Repositorios\\Selectivo_IA\\docs_assistant\\langchain-docs\\", "https://")
+
+        # Reemplazar correctamente la ruta local completa hasta 'api.python.langchain.com' por la URL base
+        new_url = new_url.replace(os.path.join(project_directory, "data", "langchain-docs", "api.python.langchain.com"),
+                                  "https://api.python.langchain.com")
+
+        # Asegurarse de que las barras invertidas se conviertan en barras inclinadas
+        new_url = new_url.replace("\\", "/")
+
+        # Actualizar la metadata con la nueva URL correctamente formateada
         doc.metadata.update({"source": new_url})
 
     print(f"Going to add {len(documents)} documents to Pinecone")
