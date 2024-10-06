@@ -1,7 +1,6 @@
 import os
 from typing import Any, Dict, List
 from dotenv import load_dotenv
-from langchain import hub
 from langchain.chains import RetrievalQA
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from pinecone import Pinecone, ServerlessSpec
@@ -24,32 +23,15 @@ if os.getenv("INDEX_NAME") not in pc.list_indexes().names():
         )
     )
 
-# Función para formatear el historial de la conversación
-def format_chat_history(chat_history: List[Dict[str, str]]) -> str:
-    formatted_history = "Conversation History:\n"
-    for interaction in chat_history:
-        role = interaction["role"]
-        content = interaction["content"]
-        if role == "human":
-            formatted_history += f"User: {content}\n"
-        else:
-            formatted_history += f"Assistant: {content}\n"
-    formatted_history += "End of History\n"
-    return formatted_history
-
-
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-    # Mostrar la consulta recibida
-    print(f"\n\n=== NUEVA CONSULTA ===")
-    print(f"Consulta recibida: {query}")
-
-    # Mostrar el historial actual antes de procesar la consulta
-    print("\nHistorial actual antes de la consulta:")
-    if chat_history:
-        for i, message in enumerate(chat_history, start=1):
-            print(f"{i}. {message['role']}: {message['content']}")
-    else:
-        print("No hay historial previo.")
+    # Mostrar la consulta recibida y el historial
+    # print(f"(BACKEND) Consulta recibida: {query}")
+    # print(f"(BACKEND) Historial recibido:")
+    # if chat_history:
+    #     for i, message in enumerate(chat_history, start=1):
+    #         print(f"\t{i}. {message['role']}: {message['content']}")
+    # else:
+    #     print("\tNo hay historial previo.")
 
     # Crear embeddings de OpenAI
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
@@ -63,10 +45,6 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     # Crear el modelo LLM de OpenAI
     chat = ChatOpenAI(verbose=True, temperature=0)
 
-    # Formatear el historial de chat en un texto entendible para el modelo
-    formatted_chat_history = format_chat_history(chat_history)
-    print("\nHistorial formateado enviado al modelo:\n", formatted_chat_history)
-
     # Crear la cadena de preguntas y respuestas utilizando el método adecuado
     qa_chain = RetrievalQA.from_chain_type(
         llm=chat,
@@ -75,30 +53,34 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     )
 
     # Ejecutar la consulta, incluyendo el historial formateado en el contexto
-    result = qa_chain.invoke({"query": f"{formatted_chat_history}User: {query}"})
+    if not chat_history:
+        # Construir la consulta sin historial
+        result = qa_chain.invoke({"query": f"User: {query}"})
+    else:
+        # Construir la consulta con el historial
+        result = qa_chain.invoke({"query": f"{chat_history}User: {query}"})
 
     # Mostrar la respuesta recibida del modelo
-    print("\n=== RESPUESTA DEL MODELO ===")
-    print(f"Respuesta del modelo: {result['result']}")
-    print("\nDocumentos fuente:")
-    for doc in result["source_documents"]:
-        print(f"- {doc.metadata.get('source', 'Fuente no disponible')}")
+    # print(f"(BACKEND) Respuesta de IA: {result['result']}")
+    # print("(BACKEND) Fuentes de de IA:")
+    # for doc in result["source_documents"]:
+    #     print(f"\t- {doc.metadata.get('source', 'Fuente no disponible')}")
 
     # Agregar la interacción al historial como diccionarios
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result['result']})
 
     # Mostrar el historial actualizado después de agregar la respuesta
-    print("\nHistorial actualizado:")
-    for i, message in enumerate(chat_history, start=1):
-        print(f"{i}. {message['role']}: {message['content']}")
+    # print("(BACKEND)Historial actualizado:")
+    # for i, message in enumerate(chat_history, start=1):
+    #     print(f"\t{i}. {message['role']}: {message['content']}")
 
     # Estructurar los resultados para el frontend, incluyendo el historial actualizado
     new_result = {
         "query": query,
         "response": result["result"],
         "sources": [doc.metadata.get("source", "No source available") for doc in result["source_documents"]],
-        "chat_history": chat_history  # Devolvemos el historial actualizado
+        "chat_history": chat_history
     }
 
     return new_result
