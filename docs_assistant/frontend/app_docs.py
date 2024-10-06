@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.core_langchain_docs import run_llm
 
-st.title("ChatBot Assistant Langchain")
+st.title("ChatBot Assistant")
 
 # Historial que se obtiene después de cada prompt con llm
 if "chat_local" not in st.session_state:
