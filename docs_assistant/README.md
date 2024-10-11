@@ -1,12 +1,13 @@
 
-# 🤖 Asistente de IA para Heroes de Overwatch
+# 🤖 Asistente de IA para Langchain
 
-Un asistente que utiliza la API de embeddings de OpenAI con el modelo `text-embedding-3-small` para el tema de los héroes del juego *Overwatch 2*. Este proyecto emplea herramientas como **Pinecone** como índice y lugar de almacenamiento, creando una base vectorial a partir de información recolectada mediante web scraping y una interfaz desarrollada en **Streamlit**.
+Un asistente que utiliza la API de embeddings de OpenAI con el modelo `text-embedding-3-small` para la documentación local de archivos html sobre Langchain. Este proyecto emplea herramientas como **Pinecone** como índice y lugar de almacenamiento, creando una base vectorial a partir de información recolectada mediante web scraping y una interfaz desarrollada en **Streamlit**.
 
 ## 🚀 Clonar el repositorio
-Puedes clonar el repositorio usando el siguiente enlace:
+Puedes clonar el repositorio usando el siguiente enlace y cambiar a la rama `LAB5_DOC_ASSISTANT`:
 ```bash
 git clone https://github.com/JosueSay/Selectivo_IA.git
+git checkout LAB5_DOC_ASSISTANT
 ```
 
 ## ⚙️ Configuración de la base vectorial en Pinecone
@@ -40,13 +41,13 @@ PINECONE_ENVIRONMENT=   # Región del índice
   
 - **`.\frontend\app_docs.py`**: Script encargado de montar el frontend usando Streamlit.
   
-- **`.\scrappers\over_scrapp.py`**: Script encargado de hacer web scraping y obtener datos para montarlos en una base vectorial en Pinecone.
+- **`.\ingestions\ingestion.py`**: Script encargado de hacer la ingestion de data al indice de la base vectorial en Pinecone.
 
 ## ▶️ Ejecutar el código
 
-1. Primero, ejecuta el script para el web scraping de la página de Overwatch:
+1. Primero, ejecuta el script para el llenar la base vectorial con la data de los archivos html en `data/langchain-docs`:
    ```bash
-   python .\scrappers\over_scrapp.py
+   python .\ingestions\ingestion.py
    ```
 
 2. Luego, ejecuta el script para la interfaz:
@@ -57,4 +58,4 @@ PINECONE_ENVIRONMENT=   # Región del índice
 ¡Ingresa tu prompt para probar el chat! 💬
 
 ## 🎥 Video del funcionamiento
-Puedes ver el video del funcionamiento en el siguiente enlace: [Video de funcionamiento](https://youtu.be/prLUuVrmyaY)
+Puedes ver el video del funcionamiento en el siguiente enlace: [Video de funcionamiento](https://youtu.be/55dGOiw7cbI?si=gf0IQJ3UD7SaeaOB)
