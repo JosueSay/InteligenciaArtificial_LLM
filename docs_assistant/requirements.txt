@@ -18,3 +18,4 @@ pinecone
 beautifulsoup4
 altar<5
 streamlit
+firecrawl-py
