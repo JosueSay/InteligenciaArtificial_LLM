@@ -1,7 +1,7 @@
 
 # 🤖 Asistente de IA para Heroes de Overwatch
 
-Un asistente que utiliza la API de embeddings de OpenAI con el modelo `text-embedding-3-small` para el tema de los héroes del juego *Overwatch 2*. Este proyecto emplea herramientas como **Pinecone** como índice y lugar de almacenamiento, creando una base vectorial a partir de información recolectada mediante web scraping, todo con una interfaz desarrollada en **Streamlit**.
+Un asistente que utiliza la API de embeddings de OpenAI con el modelo `text-embedding-3-small` para el tema de los héroes del juego *Overwatch 2*. Este proyecto emplea herramientas como **Pinecone** como índice y lugar de almacenamiento, creando una base vectorial a partir de información recolectada mediante web scraping y una interfaz desarrollada en **Streamlit**.
 
 ## 🚀 Clonar el repositorio
 Puedes clonar el repositorio usando el siguiente enlace:
@@ -57,4 +57,4 @@ PINECONE_ENVIRONMENT=   # Región del índice
 ¡Ingresa tu prompt para probar el chat! 💬
 
 ## 🎥 Video del funcionamiento
-Puedes ver el video del funcionamiento en el siguiente enlace: [Video de funcionamiento](https://youtu.be/uDdx9rBryYM)
+Puedes ver el video del funcionamiento en el siguiente enlace: [Video de funcionamiento](https://youtu.be/prLUuVrmyaY)
