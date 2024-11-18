@@ -16,6 +16,10 @@ google-search-results
 python-dotenv
 pinecone
 beautifulsoup4
+<<<<<<< HEAD
 altar
 streamlit
 pygame
+=======
+streamlit
+>>>>>>> d30a4977560166391acc48b275732450c8eb04d0
