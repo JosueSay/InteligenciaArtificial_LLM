@@ -57,5 +57,12 @@ PINECONE_ENVIRONMENT=   # Región del índice
 
 ¡Ingresa tu prompt para probar el chat! 💬
 
+## 💡Promps Recomendados
+1. **¿Cuál es el rol de Moira en Overwatch?**
+2. **¿Cuáles son las habilidades de Moira?**
+3. **¿Tiene Moira algún nombre adicional o alias?**
+4. **¿Cuál es la misión o meta de Moira dentro del universo de Overwatch?**
+5. **¿Cuál es la historia de origen de Moira?**
+
 ## 🎥 Video del funcionamiento
 Puedes ver el video del funcionamiento en el siguiente enlace: [Video de funcionamiento](https://youtu.be/55dGOiw7cbI?si=gf0IQJ3UD7SaeaOB)
