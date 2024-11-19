@@ -55,7 +55,7 @@ if user_prompt:
                 [f"[{i + 1}]({source})" for i, source in enumerate(llm_result["sources"])]
             )
             st.markdown(sources_markdown)
-            # Añade al historial
+            # Añade al historial (frontend)
             st.session_state.messages.append({"role": "assistant", "content": sources_markdown})
 
 

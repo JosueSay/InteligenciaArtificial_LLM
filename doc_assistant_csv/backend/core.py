@@ -36,6 +36,19 @@ base_prompt = hub.pull("langchain-ai/react-agent-template").partial(
     """
 )
 
+# Variable global para rastrear la última herramienta utilizada
+last_tool_used = None
+
+def wrap_tool(tool, name):
+    """
+    Envuelve la función de una herramienta para registrar su uso.
+    """
+    def wrapped_func(*args, **kwargs):
+        global last_tool_used
+        last_tool_used = name  # Registrar el nombre de la herramienta
+        return tool(*args, **kwargs)
+    return wrapped_func
+
 # Crear herramientas para Pinecone y CSV
 def create_tools():
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
@@ -75,16 +88,16 @@ def create_tools():
         result = pinecone_query(query)
         return result["metadata"]
 
-    # Definición de herramientas
+    # Definición de herramientas con wrapper
     response_tool = Tool(
         name="Pinecone Response",
-        func=get_response,
+        func=wrap_tool(get_response, "Pinecone Response"),
         description="Use this tool to get answers for general Overwatch lore or hero abilities questions."
     )
 
     metadata_tool = Tool(
         name="Pinecone Metadata",
-        func=get_metadata,
+        func=wrap_tool(get_metadata, "Pinecone Metadata"),
         description="Use this tool to get metadata (sources) for Overwatch lore or hero abilities questions."
     )
 
@@ -98,7 +111,7 @@ def create_tools():
     )
     csv_tool = Tool(
         name="CSV Agent",
-        func=csv_agent.invoke,
+        func=wrap_tool(csv_agent.invoke, "CSV Agent"),
         description="Use this tool for detailed hero stats from the CSV dataset."
     )
 
@@ -108,6 +121,8 @@ def create_tools():
 
 # Función principal para ejecutar la consulta
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
+    global last_tool_used
+    last_tool_used = None  # Resetear antes de cada consulta
 
     tools = create_tools()
     grand_agent = create_react_agent(
@@ -120,22 +135,22 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     # Ejecutar consulta con el agente principal y manejar posibles errores
     try:
         result = executor.invoke({"input": query, "chat_history": chat_history, "handle_parsing_errors": True})
-        print("RESULT TOOL",result)
-        selected_tool = result.get("tool", None)  # Identificar herramienta usada
-        print("TOOL", selected_tool)
     except Exception as e:
         return {"query": query, "response": "I don't know", "chat_history": chat_history}
-
-    # Si la herramienta utilizada fue la del CSV, no generar metadata
-    if selected_tool == "CSV Agent":
-        source = None
-    else:
-        # Generar metadata si no fue CSV Agent
-        source = tools[1].func(query)
 
     # Formatear historial correctamente
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result["output"]})
+
+    # Si la herramienta utilizada fue la del CSV, no generar metadata
+    if last_tool_used == "CSV Agent":
+        source = None
+    elif last_tool_used == "Pinecone Response":
+        # Generar metadata si no fue CSV Agent
+        source = tools[1].func(query)
+
+    for i, message in enumerate(chat_history, start=1):
+        print(f"\t{i}. {message['role']}: {message['content']}")
 
     # Estructurar respuesta
     return {
@@ -149,8 +164,22 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
 if __name__ == "__main__":
     chat_history = []
 
-    response_1 = run_llm(query="cual es el rol de moira de overwatch?", chat_history=chat_history)
-    response_2 = run_llm(query="dime el winrate para cada rango del heroe Moira", chat_history=chat_history)
-    response_3 = run_llm(query="ahora su kda para cada rango", chat_history=chat_history)
+    # Prompt 1: Rol de Moira
+    response_1 = run_llm(query="¿Cuál es el rol de Moira en Overwatch?", chat_history=chat_history)
+    print(response_1)
 
+    # Prompt 2: Winrate por rango de Moira
+    response_2 = run_llm(query="Dime el winrate para cada rango del héroe Moira", chat_history=chat_history)
+    print(response_2)
 
+    # Prompt 3: KDA por rango de Moira
+    response_3 = run_llm(query="Ahora su KDA para cada rango", chat_history=chat_history)
+    print(response_3)
+
+    # Prompt 4: Habilidades de Reinhardt
+    response_4 = run_llm(query="¿Qué habilidades tiene Reinhardt en Overwatch?", chat_history=chat_history)
+    print(response_4)
+
+    # Prompt 5: Winrate de D.Va por rango
+    response_5 = run_llm(query="Muéstrame el winrate de D.Va en cada rango", chat_history=chat_history)
+    print(response_5)
