@@ -9,7 +9,7 @@ from langchain_experimental.tools import PythonREPLTool
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 import os
 from pinecone import Pinecone, ServerlessSpec
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 # Cargar variables de entorno
 load_dotenv()
@@ -44,27 +44,52 @@ def create_tools():
         embedding=embeddings
     )
 
-    # Pinecone Tool
-    def pinecone_query(query: str):
-        print(f"[DEBUGGING] Pinecone Tool Invoked with Query: {query}")
+    # Función de consulta principal
+    def pinecone_query(query: str) -> Dict[str, Any]:
         qa_chain = RetrievalQA.from_chain_type(
             llm=ChatOpenAI(verbose=True, temperature=0),
             retriever=docsearch.as_retriever(),
             return_source_documents=True
         )
         response = qa_chain.invoke({"query": query})
-        print(f"[DEBUGGING] Pinecone Response: {response}")
-        return response
 
-    pinecone_tool = Tool(
-        name="Pinecone Agent",
-        func=pinecone_query,
-        description="Use this tool for general Overwatch lore or hero abilities questions."
+        # Extraer metadata de los documentos fuente
+        source_documents = response.get("source_documents", [])
+        metadata = [
+            doc.metadata.get("source", "No source available")
+            for doc in source_documents
+        ]
+
+        return {
+            "response": response.get("result", ""),
+            "metadata": metadata
+        }
+
+    # Herramienta para obtener respuestas
+    def get_response(query: str) -> str:
+        result = pinecone_query(query)
+        return result["response"]
+
+    # Herramienta para obtener metadata
+    def get_metadata(query: str) -> List[str]:
+        result = pinecone_query(query)
+        return result["metadata"]
+
+    # Definición de herramientas
+    response_tool = Tool(
+        name="Pinecone Response",
+        func=get_response,
+        description="Use this tool to get answers for general Overwatch lore or hero abilities questions."
+    )
+
+    metadata_tool = Tool(
+        name="Pinecone Metadata",
+        func=get_metadata,
+        description="Use this tool to get metadata (sources) for Overwatch lore or hero abilities questions."
     )
 
     # CSV Tool
     csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs", "hero_stats.csv"))
-    print(f"[DEBUGGING] CSV Path: {csv_path}")
     csv_agent = create_csv_agent(
         llm=ChatOpenAI(verbose=True, temperature=0),
         path=csv_path,
@@ -79,12 +104,10 @@ def create_tools():
 
     python_repl_tool = PythonREPLTool()
 
-    return [pinecone_tool, csv_tool, python_repl_tool]
+    return [response_tool, metadata_tool, csv_tool, python_repl_tool]
 
 # Función principal para ejecutar la consulta
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-    print(f"[DEBUGGING] Received Query: {query}")
-    print(f"[DEBUGGING] Current Chat History: {chat_history}")
 
     tools = create_tools()
     grand_agent = create_react_agent(
@@ -95,25 +118,30 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     executor = AgentExecutor(agent=grand_agent, tools=tools, verbose=True)
 
     # Ejecutar consulta con el agente principal y manejar posibles errores
-    print("[DEBUGGING] Executing Agent with Query...")
     try:
         result = executor.invoke({"input": query, "chat_history": chat_history, "handle_parsing_errors": True})
+        print("RESULT TOOL",result)
+        selected_tool = result.get("tool", None)  # Identificar herramienta usada
+        print("TOOL", selected_tool)
     except Exception as e:
-        print(f"[DEBUGGING] Error during agent execution: {e}")
         return {"query": query, "response": "I don't know", "chat_history": chat_history}
 
-    print(f"[DEBUGGING] Agent Result: {result}")
+    # Si la herramienta utilizada fue la del CSV, no generar metadata
+    if selected_tool == "CSV Agent":
+        source = None
+    else:
+        # Generar metadata si no fue CSV Agent
+        source = tools[1].func(query)
 
     # Formatear historial correctamente
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result["output"]})
-    print(f"[DEBUGGING] Updated Chat History: {chat_history}")
 
     # Estructurar respuesta
     return {
         "query": query,
         "response": result["output"],
-        "sources": result.get("source_documents", []),
+        "sources": source,
         "chat_history": chat_history,
     }
 
@@ -121,12 +149,8 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
 if __name__ == "__main__":
     chat_history = []
 
-    print("[DEBUGGING] Running Initial Test Queries...")
     response_1 = run_llm(query="cual es el rol de moira de overwatch?", chat_history=chat_history)
-    print(f"[DEBUGGING] Final Response 1: {response_1}")
-
     response_2 = run_llm(query="dime el winrate para cada rango del heroe Moira", chat_history=chat_history)
-    print(f"[DEBUGGING] Final Response 2: {response_2}")
-
     response_3 = run_llm(query="ahora su kda para cada rango", chat_history=chat_history)
-    print(f"[DEBUGGING] Final Response 3: {response_3}")
+
+

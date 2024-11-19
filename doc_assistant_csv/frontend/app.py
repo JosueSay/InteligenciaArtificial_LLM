@@ -48,16 +48,15 @@ if user_prompt:
     # Añade la respuesta al historial de mensajes
     st.session_state.messages.append({"role": "assistant", "content": llm_result["response"]})
 
-    # Muestra las fuentes como enlaces
-    # En el frontend (app.py), agregar una verificación para el campo 'sources'
-    if "sources" in llm_result:
-        sources_markdown = "Fuentes: " + ", ".join(
-            [f"[{i + 1}]({source})" for i, source in enumerate(llm_result["sources"])]
-        )
-        st.markdown(sources_markdown)
-        # Añade las fuentes al historial de mensajes
-        st.session_state.messages.append({"role": "assistant", "content": sources_markdown})
-    else:
-        st.markdown("No sources available.")
+    # Verifica si hay fuentes para mostrar
+    if llm_result.get("sources"):
+        with st.chat_message("assistant"):
+            sources_markdown = "Fuentes: " + ", ".join(
+                [f"[{i + 1}]({source})" for i, source in enumerate(llm_result["sources"])]
+            )
+            st.markdown(sources_markdown)
+            # Añade al historial
+            st.session_state.messages.append({"role": "assistant", "content": sources_markdown})
+
 
 
