@@ -26,7 +26,7 @@ if os.getenv("INDEX_NAME") not in pc.list_indexes().names():
         )
     )
 
-# Cargar el prompt base (cacheado para eficiencia)
+# Cargar el prompt base
 base_prompt = hub.pull("langchain-ai/react-agent-template")
 
 # Crear herramientas para Pinecone y CSV
@@ -39,21 +39,25 @@ def create_tools():
 
     # Pinecone Tool
     def pinecone_query(query: str):
+        print(f"[DEBUGGING] Pinecone Tool Invoked with Query: {query}")
         qa_chain = RetrievalQA.from_chain_type(
             llm=ChatOpenAI(verbose=True, temperature=0),
             retriever=docsearch.as_retriever(),
             return_source_documents=True
         )
-        return qa_chain.invoke({"query": query})
+        response = qa_chain.invoke({"query": query})
+        print(f"[DEBUGGING] Pinecone Response: {response}")
+        return response
 
     pinecone_tool = Tool(
         name="Pinecone Agent",
         func=pinecone_query,
-        description="Use this tool for general Overwatch lore or hero abilities questions."
+        description="Utiliza esta herramienta para preguntas generales sobre Overwatch o las habilidades de los héroes."
     )
 
     # CSV Tool
     csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs", "hero_stats.csv"))
+    print(f"[DEBUGGING] CSV Path: {csv_path}")
     csv_agent = create_csv_agent(
         llm=ChatOpenAI(verbose=True, temperature=0),
         path=csv_path,
@@ -63,13 +67,16 @@ def create_tools():
     csv_tool = Tool(
         name="CSV Agent",
         func=csv_agent.invoke,
-        description="Use this tool for detailed hero stats from the CSV dataset."
+        description="Utiliza esta herramienta para obtener estadísticas detalladas sobre héroes a partir del conjunto de datos CSV."
     )
 
     return [pinecone_tool, csv_tool]
 
 # Función principal para ejecutar la consulta
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
+    print(f"[DEBUGGING] Received Query: {query}")
+    print(f"[DEBUGGING] Current Chat History: {chat_history}")
+
     tools = create_tools()
     grand_agent = create_react_agent(
         prompt=base_prompt.partial(instructions=""),
@@ -79,11 +86,14 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     executor = AgentExecutor(agent=grand_agent, tools=tools, verbose=True)
 
     # Ejecutar consulta con el agente principal
+    print("[DEBUGGING] Executing Agent with Query...")
     result = executor.invoke({"input": query})
+    print(f"[DEBUGGING] Agent Result: {result}")
 
     # Formatear historial
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result["output"]})
+    print(f"[DEBUGGING] Updated Chat History: {chat_history}")
 
     # Estructurar respuesta
     return {
@@ -96,6 +106,13 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
 # Pruebas iniciales
 if __name__ == "__main__":
     chat_history = []
-    print(run_llm(query="¿Cuál es el rol de Moira en Overwatch?", chat_history=chat_history))
-    print(run_llm(query="¿Cuáles son las habilidades de Moira?", chat_history=chat_history))
-    print(run_llm(query="¿Cuál es el KDA de Ana en rango Diamante?", chat_history=chat_history))
+
+    print("[DEBUGGING] Running Initial Test Queries...")
+    response_1 = run_llm(query="¿Cuál es el rol de Moira en Overwatch?", chat_history=chat_history)
+    print(f"[DEBUGGING] Final Response 1: {response_1}")
+
+    response_2 = run_llm(query="¿Cuáles son las habilidades de Moira?", chat_history=chat_history)
+    print(f"[DEBUGGING] Final Response 2: {response_2}")
+
+    response_3 = run_llm(query="¿Cuál es el KDA de Ana en rango Diamante?", chat_history=chat_history)
+    print(f"[DEBUGGING] Final Response 3: {response_3}")
