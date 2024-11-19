@@ -5,6 +5,7 @@ from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import Pinecone as PineconeVectorStore
 from langchain_core.tools import Tool
 from langchain_experimental.agents.agent_toolkits import create_csv_agent
+from langchain_experimental.tools import PythonREPLTool
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 import os
 from pinecone import Pinecone, ServerlessSpec
@@ -34,7 +35,6 @@ base_prompt = hub.pull("langchain-ai/react-agent-template").partial(
     Maintain language consistency throughout the conversation.
     """
 )
-
 
 # Crear herramientas para Pinecone y CSV
 def create_tools():
@@ -77,7 +77,9 @@ def create_tools():
         description="Use this tool for detailed hero stats from the CSV dataset."
     )
 
-    return [pinecone_tool, csv_tool]
+    python_repl_tool = PythonREPLTool()
+
+    return [pinecone_tool, csv_tool, python_repl_tool]
 
 # Función principal para ejecutar la consulta
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
@@ -92,12 +94,17 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     )
     executor = AgentExecutor(agent=grand_agent, tools=tools, verbose=True)
 
-    # Ejecutar consulta con el agente principal
+    # Ejecutar consulta con el agente principal y manejar posibles errores
     print("[DEBUGGING] Executing Agent with Query...")
-    result = executor.invoke({"input": query})
+    try:
+        result = executor.invoke({"input": query, "chat_history": chat_history, "handle_parsing_errors": True})
+    except Exception as e:
+        print(f"[DEBUGGING] Error during agent execution: {e}")
+        return {"query": query, "response": "I don't know", "chat_history": chat_history}
+
     print(f"[DEBUGGING] Agent Result: {result}")
 
-    # Formatear historial
+    # Formatear historial correctamente
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result["output"]})
     print(f"[DEBUGGING] Updated Chat History: {chat_history}")
@@ -115,11 +122,11 @@ if __name__ == "__main__":
     chat_history = []
 
     print("[DEBUGGING] Running Initial Test Queries...")
-    response_1 = run_llm(query="¿Cuál es el rol de Moira en Overwatch?", chat_history=chat_history)
+    response_1 = run_llm(query="cual es el rol de moira de overwatch?", chat_history=chat_history)
     print(f"[DEBUGGING] Final Response 1: {response_1}")
 
-    response_2 = run_llm(query="¿Cuáles son las habilidades de Moira?", chat_history=chat_history)
+    response_2 = run_llm(query="dime el winrate para cada rango del heroe Moira", chat_history=chat_history)
     print(f"[DEBUGGING] Final Response 2: {response_2}")
 
-    response_3 = run_llm(query="¿Cuál es el KDA de Ana en rango Diamante?", chat_history=chat_history)
+    response_3 = run_llm(query="ahora su kda para cada rango", chat_history=chat_history)
     print(f"[DEBUGGING] Final Response 3: {response_3}")
