@@ -30,9 +30,21 @@ def main():
 
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-    agent_executor.invoke(
+    # agent_executor.invoke(
+    #     input={
+    #         "input":"""generate and save in current working directory 2 QR codes that point to www.google.com, you have qrcode package installe already"""
+    #     }
+    # )
+
+    csv_agent = create_csv_agent(
+        llm=ChatOpenAI(temperature=0, model="gpt-4"),
+        path="episode_info.csv",
+        verbose=True,
+        allow_dangerous_code=True
+    )
+    csv_agent.invoke(
         input={
-            "input":"""generate and save in current working directory 2 QR codes that point to www.google.com, you have qrcode package installe already"""
+            "input":"how many episodes did Larry David write?"
         }
     )
 
