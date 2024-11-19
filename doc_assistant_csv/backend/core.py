@@ -1,17 +1,20 @@
-import os
-from typing import Any, Dict, List
 from dotenv import load_dotenv
+from langchain import hub
+from langchain.agents import create_react_agent, AgentExecutor
 from langchain.chains import RetrievalQA
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from pinecone import Pinecone, ServerlessSpec
 from langchain_community.vectorstores import Pinecone as PineconeVectorStore
+from langchain_core.tools import Tool
+from langchain_experimental.agents.agent_toolkits import create_csv_agent
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+import os
+from pinecone import Pinecone, ServerlessSpec
+from typing import Any, Dict, List
 
+# Cargar variables de entorno
 load_dotenv()
 
-# Inicializar Pinecone con la nueva clase y ServerlessSpec
+# Inicializar Pinecone
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-
-# Crear el índice si no existe
 if os.getenv("INDEX_NAME") not in pc.list_indexes().names():
     pc.create_index(
         name=os.getenv("INDEX_NAME"),
@@ -23,74 +26,76 @@ if os.getenv("INDEX_NAME") not in pc.list_indexes().names():
         )
     )
 
-def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
-    # Mostrar la consulta recibida y el historial
-    # print(f"(BACKEND) Consulta recibida: {query}")
-    # print(f"(BACKEND) Historial recibido:")
-    # if chat_history:
-    #     for i, message in enumerate(chat_history, start=1):
-    #         print(f"\t{i}. {message['role']}: {message['content']}")
-    # else:
-    #     print("\tNo hay historial previo.")
+# Cargar el prompt base (cacheado para eficiencia)
+base_prompt = hub.pull("langchain-ai/react-agent-template")
 
-    # Crear embeddings de OpenAI
+# Crear herramientas para Pinecone y CSV
+def create_tools():
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-
-    # Conectar con el índice de Pinecone existente
     docsearch = PineconeVectorStore.from_existing_index(
         index_name=os.getenv("INDEX_NAME"),
         embedding=embeddings
     )
 
-    # Crear el modelo LLM de OpenAI
-    chat = ChatOpenAI(verbose=True, temperature=0)
+    # Pinecone Tool
+    def pinecone_query(query: str):
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=ChatOpenAI(verbose=True, temperature=0),
+            retriever=docsearch.as_retriever(),
+            return_source_documents=True
+        )
+        return qa_chain.invoke({"query": query})
 
-    # Crear la cadena de preguntas y respuestas utilizando el método adecuado
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=chat,
-        retriever=docsearch.as_retriever(),
-        return_source_documents=True
+    pinecone_tool = Tool(
+        name="Pinecone Agent",
+        func=pinecone_query,
+        description="Use this tool for general Overwatch lore or hero abilities questions."
     )
 
-    # Ejecutar la consulta, incluyendo el historial formateado en el contexto
-    if not chat_history:
-        # Construir la consulta sin historial
-        result = qa_chain.invoke({"query": f"User: {query}"})
-    else:
-        # Construir la consulta con el historial
-        result = qa_chain.invoke({"query": f"{chat_history}User: {query}"})
+    # CSV Tool
+    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs", "hero_stats.csv"))
+    csv_agent = create_csv_agent(
+        llm=ChatOpenAI(verbose=True, temperature=0),
+        path=csv_path,
+        verbose=True,
+        allow_dangerous_code=True
+    )
+    csv_tool = Tool(
+        name="CSV Agent",
+        func=csv_agent.invoke,
+        description="Use this tool for detailed hero stats from the CSV dataset."
+    )
 
-    # Mostrar la respuesta recibida del modelo
-    # print(f"(BACKEND) Respuesta de IA: {result['result']}")
-    # print("(BACKEND) Fuentes de de IA:")
-    # for doc in result["source_documents"]:
-    #     print(f"\t- {doc.metadata.get('source', 'Fuente no disponible')}")
+    return [pinecone_tool, csv_tool]
 
-    # Agregar la interacción al historial como diccionarios
+# Función principal para ejecutar la consulta
+def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
+    tools = create_tools()
+    grand_agent = create_react_agent(
+        prompt=base_prompt.partial(instructions=""),
+        llm=ChatOpenAI(temperature=0),
+        tools=tools,
+    )
+    executor = AgentExecutor(agent=grand_agent, tools=tools, verbose=True)
+
+    # Ejecutar consulta con el agente principal
+    result = executor.invoke({"input": query})
+
+    # Formatear historial
     chat_history.append({"role": "human", "content": query})
-    chat_history.append({"role": "ai", "content": result['result']})
+    chat_history.append({"role": "ai", "content": result["output"]})
 
-    # Mostrar el historial actualizado después de agregar la respuesta
-    # print("(BACKEND)Historial actualizado:")
-    # for i, message in enumerate(chat_history, start=1):
-    #     print(f"\t{i}. {message['role']}: {message['content']}")
-
-    # Estructurar los resultados para el frontend, incluyendo el historial actualizado
-    new_result = {
+    # Estructurar respuesta
+    return {
         "query": query,
-        "response": result["result"],
-        "sources": [doc.metadata.get("source", "No source available") for doc in result["source_documents"]],
-        "chat_history": chat_history
+        "response": result["output"],
+        "sources": result.get("source_documents", []),
+        "chat_history": chat_history,
     }
 
-    return new_result
-
-
+# Pruebas iniciales
 if __name__ == "__main__":
     chat_history = []
-
     print(run_llm(query="¿Cuál es el rol de Moira en Overwatch?", chat_history=chat_history))
     print(run_llm(query="¿Cuáles son las habilidades de Moira?", chat_history=chat_history))
-    print(run_llm(query="¿Tiene Moira algún nombre adicional o alias?", chat_history=chat_history))
-    print(run_llm(query="¿Cuál es la misión o meta de Moira dentro del universo de Overwatch?", chat_history=chat_history))
-    print(run_llm(query="¿Cuál es la historia de origen de Moira?", chat_history=chat_history))
+    print(run_llm(query="¿Cuál es el KDA de Ana en rango Diamante?", chat_history=chat_history))
