@@ -27,7 +27,14 @@ if os.getenv("INDEX_NAME") not in pc.list_indexes().names():
     )
 
 # Cargar el prompt base
-base_prompt = hub.pull("langchain-ai/react-agent-template")
+base_prompt = hub.pull("langchain-ai/react-agent-template").partial(
+    instructions="""
+    You are an intelligent assistant that always responds in the same language as the input query.
+    If the user asks a question in Spanish, respond in Spanish. If the user asks in English, respond in English.
+    Maintain language consistency throughout the conversation.
+    """
+)
+
 
 # Crear herramientas para Pinecone y CSV
 def create_tools():
@@ -52,7 +59,7 @@ def create_tools():
     pinecone_tool = Tool(
         name="Pinecone Agent",
         func=pinecone_query,
-        description="Utiliza esta herramienta para preguntas generales sobre Overwatch o las habilidades de los héroes."
+        description="Use this tool for general Overwatch lore or hero abilities questions."
     )
 
     # CSV Tool
@@ -67,7 +74,7 @@ def create_tools():
     csv_tool = Tool(
         name="CSV Agent",
         func=csv_agent.invoke,
-        description="Utiliza esta herramienta para obtener estadísticas detalladas sobre héroes a partir del conjunto de datos CSV."
+        description="Use this tool for detailed hero stats from the CSV dataset."
     )
 
     return [pinecone_tool, csv_tool]
@@ -79,7 +86,7 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
 
     tools = create_tools()
     grand_agent = create_react_agent(
-        prompt=base_prompt.partial(instructions=""),
+        prompt=base_prompt,
         llm=ChatOpenAI(temperature=0),
         tools=tools,
     )
