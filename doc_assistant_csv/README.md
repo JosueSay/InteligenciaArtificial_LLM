@@ -108,5 +108,4 @@ Prueba los siguientes prompts para evaluar el comportamiento del asistente:
 
 ## 🎥 Videos
 
-- [**Video de demostración**](#)
-- [**Video explicativo**](#)
+- [**Video de demostración**](https://youtu.be/RMr4_lB28Vc)
