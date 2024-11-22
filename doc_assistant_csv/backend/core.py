@@ -123,7 +123,7 @@ def create_tools():
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, Any]:
     global last_tool_used
     last_tool_used = None  # Resetear antes de cada consulta
-
+    sources = None # metadata
     tools = create_tools()
     grand_agent = create_react_agent(
         prompt=base_prompt,
@@ -142,12 +142,11 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     chat_history.append({"role": "human", "content": query})
     chat_history.append({"role": "ai", "content": result["output"]})
 
+
     # Si la herramienta utilizada fue la del CSV, no generar metadata
-    if last_tool_used == "CSV Agent":
-        source = None
-    elif last_tool_used == "Pinecone Response":
+    if last_tool_used == "Pinecone Response":
         # Generar metadata si no fue CSV Agent
-        source = tools[1].func(query)
+        sources = tools[1].func(query)
 
     for i, message in enumerate(chat_history, start=1):
         print(f"\t{i}. {message['role']}: {message['content']}")
@@ -156,7 +155,7 @@ def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Dict[str, An
     return {
         "query": query,
         "response": result["output"],
-        "sources": source,
+        "sources": sources,
         "chat_history": chat_history,
     }
 

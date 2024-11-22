@@ -98,11 +98,14 @@ Se abrirá una pestaña en tu navegador y si no lo hace, accede al enlace local 
 
 Prueba los siguientes prompts para evaluar el comportamiento del asistente:
 
+ 
 1. **¿Cuál es el rol de Moira en Overwatch?**
 2. **Dime el winrate para cada rango del héroe Moira.**
 3. **Ahora su KDA para cada rango.**
 4. **¿Qué habilidades tiene Reinhardt en Overwatch?**
 5. **Muéstrame el winrate de D.Va en cada rango.**
+
+También puedes utilizar los prompts por default en el **`menú desplegable`** y enviar el prompt para  probar la funcionalidad del agente.
 
 ---
 
