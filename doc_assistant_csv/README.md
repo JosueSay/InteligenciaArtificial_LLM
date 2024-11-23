@@ -110,5 +110,5 @@ También puedes utilizar los prompts por default en el **`menú desplegable`** y
 ---
 
 ## 🎥 Videos
-
-- [**Video de demostración**](https://youtu.be/RMr4_lB28Vc)
+- [**Video Configuración Base**](https://youtu.be/3ZOYn6ikhnw)
+- [**Video Demostrativo**](https://youtu.be/meVhIajTNwA)
