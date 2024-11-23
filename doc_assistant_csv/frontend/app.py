@@ -61,8 +61,16 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Captura el prompt del usuario y lo procesa
+# Captura el prompt del usuario y lo procesa
 user_prompt = st.chat_input("Pregúntale al ChatBot")
 if user_prompt:
+    # Muestra el mensaje del usuario inmediatamente
+    with st.chat_message("human"):
+        st.markdown(user_prompt)
+
+    # Agrega el mensaje del usuario al historial
+    st.session_state.messages.append({"role": "human", "content": user_prompt})
+
     # Procesar la consulta personalizada
     with st.spinner("Cargando respuesta..."):
         llm_result = run_llm(query=user_prompt, chat_history=st.session_state.chat_local.copy())
@@ -70,8 +78,11 @@ if user_prompt:
         # Actualiza el historial local
         st.session_state.chat_local = llm_result["chat_history"]
 
-        # Añadir los mensajes de usuario y asistente al historial
-        st.session_state.messages.append({"role": "human", "content": user_prompt})
+        # Muestra la respuesta del asistente inmediatamente
+        with st.chat_message("assistant"):
+            st.markdown(llm_result["response"])
+
+        # Agrega la respuesta al historial
         st.session_state.messages.append({"role": "assistant", "content": llm_result["response"]})
 
         # Verifica si hay fuentes para mostrar
@@ -79,4 +90,8 @@ if user_prompt:
             sources_markdown = "Fuentes: " + ", ".join(
                 [f"[{i + 1}]({source})" for i, source in enumerate(llm_result["sources"])]
             )
+            with st.chat_message("assistant"):
+                st.markdown(sources_markdown)
+
+            # Agrega las fuentes al historial
             st.session_state.messages.append({"role": "assistant", "content": sources_markdown})
